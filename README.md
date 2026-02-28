@@ -26,16 +26,17 @@ A minimalist, 8-bit memorial for abandoned software projects.
 
 ---
 
+### ⚠️ System Status (Hunter ID)
+
+![System Alert Card](https://project-systemalert.zeabur.app/api/card?username=Adaimade)
+
+---
+
 ### 🛠️ Tech Stack
 *   **Languages**: Python, JavaScript
 *   **AI**: Gemini, OpenAI, LLM Agents
 *   **Tools**: Docker, N8N, OpenClaw
 *   **Vibe**: 8-bit, Retro, Cyberpunk
-
----
-
-### 📊 GitHub Stats
-![Adaimade's GitHub stats](https://github-readme-stats.vercel.app/api?username=Adaimade&show_icons=true&theme=dark)
 
 ---
 
