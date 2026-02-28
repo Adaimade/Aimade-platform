@@ -6,9 +6,18 @@ I build AI agents, automation workflows, and digital experiences. Sometimes they
 
 ---
 
-### ⚰️ Featured Project: Digital Graveyard
+### 🚀 Main Base: BlockGames Studio
 
-**[Enter the Graveyard](https://digital-graveyard.zeabur.app)**
+**[Enter the Studio](https://www.blockgames.studio/)** 🎮
+
+My primary workshop. Here you'll find my active games, tools, and ongoing experiments.
+*Where ideas come to life.*
+
+---
+
+### ⚰️ The Crypt: Digital Graveyard
+
+**[Enter the Graveyard](https://digital-graveyard.zeabur.app)** 💀
 
 A minimalist, 8-bit memorial for abandoned software projects.
 *Built with Flask, Gemini AI, and a touch of melancholy.*
