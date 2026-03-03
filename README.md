@@ -15,6 +15,24 @@ My primary workshop. Here you'll find my active games, tools, and ongoing experi
 
 ---
 
+### ⚙️ Active Tools
+
+#### 🐉 [HydraBot](https://github.com/Adaimade/HydraBot)
+
+Self-expanding AI assistant that runs locally and communicates via Telegram. Execute code, manage files, spawn parallel sub-agents, and create new tools at runtime.
+
+**Features**: Multi-model support • Parallel sub-agents • Self-expansion • Local execution • Scheduled notifications
+**Stack**: Python 3.10+ • Claude, OpenAI, Gemini • Telegram API
+
+#### 📧 [mail_bot](https://github.com/Adaimade/mail_bot)
+
+Intelligent Gmail dashboard powered by Claude AI. Automatically filter, summarize, and organize emails across multiple accounts with smart classification and learning.
+
+**Features**: Smart filtering • Contextual classification • AI-suggested labels • Learning system • Multi-account support
+**Stack**: Python • Flask • Claude AI • Gmail API • Tailwind CSS
+
+---
+
 ### ⚰️ The Crypt: Digital Graveyard
 
 **[Enter the Graveyard](https://digital-graveyard.zeabur.app)** 💀
