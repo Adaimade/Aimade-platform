@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "Bash(git add README.md)",
+      "Bash(git commit -m \"Profile: Added HydraBot & mail_bot to Active Tools section 🛠️\")",
+      "Bash(git push)"
+    ]
+  }
+}
