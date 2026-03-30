@@ -1,0 +1,17 @@
+{
+  "name": "adaimade-queue-worker",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev":    "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.34.1"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241004.0",
+    "typescript": "^5.5.3",
+    "wrangler": "^3.80.0"
+  }
+}

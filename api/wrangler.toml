@@ -1,0 +1,23 @@
+name       = "adaimade-api"
+main       = "src/index.ts"
+compatibility_date = "2024-10-01"
+compatibility_flags = ["nodejs_compat"]
+
+# D1 Database (SQLite on Cloudflare)
+[[d1_databases]]
+binding  = "DB"          # how we reference it in code: c.env.DB
+database_name = "adaimade-db"
+database_id   = "d260af5a-ef8a-4783-8ed6-ef3b75b4f284"
+
+# Queue (outbound — we send jobs here)
+[[queues.producers]]
+binding = "DEPLOY_QUEUE"
+queue   = "adaimade-deploy-queue"
+
+[vars]
+ENVIRONMENT = "development"
+CLERK_PUBLISHABLE_KEY = "pk_live_Y2xlcmsuYWRhaW1hZGUuY29tJA"
+
+# Secrets (set via: wrangler secret put SECRET_NAME)
+# CLERK_SECRET_KEY
+# ENCRYPTION_KEY

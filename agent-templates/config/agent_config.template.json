@@ -1,0 +1,15 @@
+{
+  "agent_id": "{{agent_id}}",
+  "agent_name": "{{agent_name}}",
+  "personality": {
+    "tone": "{{personality.tone}}",
+    "verbosity": "{{personality.verbosity}}",
+    "emoji": {{personality.emoji}},
+    "custom_instructions": "{{personality.custom_instructions}}"
+  },
+  "skills": {{skills}},
+  "llm": {
+    "provider": "{{llm.provider}}",
+    "model": "{{llm.model}}"
+  }
+}

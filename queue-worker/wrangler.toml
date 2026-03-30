@@ -1,0 +1,23 @@
+name       = "adaimade-queue-worker"
+main       = "src/index.ts"
+compatibility_date = "2024-10-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Queue consumer — picks up jobs sent by the API worker
+[[queues.consumers]]
+queue      = "adaimade-deploy-queue"
+max_batch_size  = 1
+max_retries     = 3
+
+# Same D1 database as the API
+[[d1_databases]]
+binding       = "DB"
+database_name = "adaimade-db"
+database_id   = "d260af5a-ef8a-4783-8ed6-ef3b75b4f284"
+
+# R2 for storing build artifacts (agent configs, etc.)
+[[r2_buckets]]
+binding     = "R2"
+bucket_name = "adaimade-builds"
+
+# Secrets: ENCRYPTION_KEY, ZEABUR_DEPLOY_URL (internal)

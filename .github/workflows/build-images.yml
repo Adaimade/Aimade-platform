@@ -1,0 +1,70 @@
+name: Build Bot Images
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'agent-templates/**'
+      - 'discord-engine/**'
+  repository_dispatch:
+    types: [hydrabot-updated]   # triggered by HydraBot repo push
+  workflow_dispatch:            # manual trigger
+
+env:
+  REGISTRY: ghcr.io
+  OWNER: adaimade
+
+jobs:
+  build-discord-bot:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v5
+        with:
+          context: ./discord-engine
+          push: true
+          tags: ghcr.io/${{ env.OWNER }}/discord-bot:latest
+
+  build-hydrabot:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v5
+        with:
+          context: ./agent-templates/hydrabot
+          push: true
+          tags: ghcr.io/${{ env.OWNER }}/hydrabot:latest
+
+  build-openclaw:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v5
+        with:
+          context: ./agent-templates/openclaw
+          push: true
+          tags: ghcr.io/${{ env.OWNER }}/openclaw:latest

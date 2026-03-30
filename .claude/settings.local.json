@@ -4,7 +4,14 @@
       "WebFetch(domain:github.com)",
       "Bash(git add README.md)",
       "Bash(git commit -m \"Profile: Added HydraBot & mail_bot to Active Tools section 🛠️\")",
-      "Bash(git push)"
+      "Bash(git push)",
+      "WebFetch(domain:zeabur.com)",
+      "WebSearch",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(npx wrangler:*)",
+      "Bash(npm run:*)",
+      "Bash(docker build:*)",
+      "Bash(docker push:*)"
     ]
   }
 }

@@ -1,58 +1,127 @@
-# Hi there, I'm Adaimade 👋
+# Adaimade — AI Agent Deployment Platform
 
-> *Creator | Builder | Keeper of the Digital Graveyard*
-
-I build AI agents, automation workflows, and digital experiences. Sometimes they change the world, sometimes they rest in peace.
-
----
-
-### 🚀 Main Base: BlockGames Studio
-
-**[Enter the Studio](https://www.blockgames.studio/)** 🎮
-
-My primary workshop. Here you'll find my active games, tools, and ongoing experiments.
-*Where ideas come to life.*
+> Deploy your AI Discord bot in 30 seconds. No code required.
+> Fully built on the Cloudflare ecosystem.
 
 ---
 
-### ⚙️ Active Tools
+## How it works
 
-#### 🐉 [HydraBot](https://github.com/Adaimade/HydraBot)
-
-Self-expanding AI assistant that runs locally and communicates via Telegram. Execute code, manage files, spawn parallel sub-agents, and create new tools at runtime.
-
-#### 📧 [mail_bot](https://github.com/Adaimade/mail_bot)
-
-Intelligent Gmail dashboard powered by Claude AI. Automatically filter, summarize, and organize emails across multiple accounts with smart classification and learning.
-
+1. **Create** an AI agent (name, personality, skills, LLM)
+2. **Connect** your cloud account (Zeabur or AWS)
+3. **Deploy** — one click, bot comes online in Discord
 
 ---
 
-### ⚰️ The Crypt: Digital Graveyard
+## Architecture
 
-**[Enter the Graveyard](https://digital-graveyard.zeabur.app)** 💀
+```
+web/           React + Vite → Cloudflare Pages
+api/           Hono.js      → Cloudflare Workers  (REST API)
+queue-worker/  TypeScript   → Cloudflare Workers  (deployment jobs)
+               ├── Cloudflare D1      (SQLite database)
+               ├── Cloudflare Queues  (async job queue)
+               └── Cloudflare R2      (agent configs / artifacts)
 
-A minimalist, 8-bit memorial for abandoned software projects.
-*Built with Flask, Gemini AI, and a touch of melancholy.*
+discord-engine/   Python discord.py   → deployed to customer's cloud
+agent-templates/  Dockerfile + config templates
+```
 
-> *"The code compiles. The tests pass. But the project... sleeps."*
-
----
-
-### ⚠️ System Status (Hunter ID)
-
-![System Alert Card](https://project-systemalert.zeabur.app/api/card?username=Adaimade)
-
----
-
-### 🛠️ Tech Stack
-*   **Languages**: Python, JavaScript
-*   **AI**: Gemini, OpenAI, LLM Agents
-*   **Tools**: Docker, N8N, OpenClaw
-*   **Vibe**: 8-bit, Retro, Cyberpunk
+**Auth:** Clerk
+**Encryption:** AES-256-GCM (Web Crypto API, no dependencies)
+**Bot deployment targets:** Zeabur · AWS
 
 ---
 
-<p align="center">
-  Made with 🖤 by <b>ADAIMADE</b> & <b>SlantKing</b>
-</p>
+## Quick Start
+
+### Prerequisites
+- [Node.js 20+](https://nodejs.org)
+- [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/): `npm i -g wrangler`
+- [Clerk account](https://clerk.com) (free)
+- Cloudflare account (free)
+
+### 1. Install dependencies
+```bash
+make install
+```
+
+### 2. Login to Cloudflare
+```bash
+npx wrangler login
+```
+
+### 3. Create Cloudflare resources (run once)
+```bash
+make db-create      # creates D1 database
+make db-migrate     # runs SQL migrations
+make r2-create      # creates R2 bucket
+make queue-create   # creates deploy queue
+```
+
+### 4. Set secrets
+```bash
+cd api
+npx wrangler secret put CLERK_SECRET_KEY
+npx wrangler secret put ENCRYPTION_KEY    # use: make gen-key
+```
+
+### 5. Configure frontend
+```bash
+cp web/.env.example web/.env
+# fill in VITE_CLERK_PUBLISHABLE_KEY from clerk.com dashboard
+```
+
+### 6. Start local dev
+```bash
+make dev-api   # API on http://localhost:8787
+make dev-web   # Frontend on http://localhost:5173
+```
+
+---
+
+## Deploy to production
+```bash
+make deploy-api
+make deploy-web
+make deploy-worker
+```
+
+---
+
+## Project Structure
+
+```
+web/
+├── src/
+│   ├── pages/        # Home, Dashboard, Agents, AgentNew, AgentDeploy, CloudAccounts
+│   ├── components/   # Layout (Sidebar, TopBar), reusable UI
+│   ├── lib/          # api.ts (fetch), utils.ts
+│   └── types/        # agent.ts, deployment.ts, cloud.ts
+
+api/
+├── src/
+│   ├── routes/       # agents.ts, deployments.ts, cloud-accounts.ts
+│   ├── middleware/   # auth.ts (Clerk JWT)
+│   ├── db/           # schema.ts (Drizzle), index.ts
+│   └── lib/          # crypto.ts (AES-256)
+└── migrations/       # D1 SQL migrations
+
+queue-worker/
+└── src/
+    ├── adapters/     # zeabur.ts, aws.ts
+    └── index.ts      # queue consumer logic
+
+discord-engine/       # Python discord.py bot (deployed to customer's cloud)
+agent-templates/      # Dockerfile + config templates for deployed bots
+docs/                 # Architecture, API ref, guides
+```
+
+---
+
+## Docs
+- [Architecture](./docs/architecture.md)
+- [API Reference](./docs/api-reference.md)
+- [Local Dev Setup](./docs/developer/local-dev-setup.md)
+- [Adding a Cloud Provider](./docs/developer/adding-a-cloud.md)
+- [Adding a Bot Skill](./docs/developer/adding-a-skill.md)
