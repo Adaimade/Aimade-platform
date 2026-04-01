@@ -19,9 +19,14 @@ import * as awsAdapter from './adapters/aws'
 import * as railwayAdapter from './adapters/railway'
 
 type Bindings = {
-  DB:             D1Database
-  R2:             R2Bucket
-  ENCRYPTION_KEY: string
+  DB:              D1Database
+  R2:              R2Bucket
+  ENCRYPTION_KEY:  string
+  // Stock API keys — injected into HydraBot at deploy time
+  FUGLE_API_KEY:   string   // Fugle MarketData (Taiwan real-time)
+  FUGLE_REFRESH_TOKEN: string // Fugle refresh token
+  FINMIND_TOKEN:   string   // FinMind (Taiwan history)
+  TWELVE_DATA_KEY: string   // Twelve Data (US stocks)
 }
 
 type DeployMessage = {
@@ -105,11 +110,16 @@ async function processDeployment(
     }
 
     envVars = {
-      TELEGRAM_BOT_TOKEN: botToken,
-      TELEGRAM_USER_IDS:  telegramUserIds,
-      LLM_PROVIDER:       agent.llm_provider,
-      LLM_MODEL:          agent.llm_model,
-      LLM_API_KEY:        llmApiKey,
+      TELEGRAM_BOT_TOKEN:   botToken,
+      TELEGRAM_USER_IDS:    telegramUserIds,
+      LLM_PROVIDER:         agent.llm_provider,
+      LLM_MODEL:            agent.llm_model,
+      LLM_API_KEY:          llmApiKey,
+      // Stock data APIs
+      FUGLE_API_KEY:        env.FUGLE_API_KEY        ?? '',
+      FUGLE_REFRESH_TOKEN:  env.FUGLE_REFRESH_TOKEN  ?? '',
+      FINMIND_TOKEN:        env.FINMIND_TOKEN         ?? '',
+      TWELVE_DATA_KEY:      env.TWELVE_DATA_KEY       ?? '',
     }
 
   } else if (botEngine === 'openclaw') {

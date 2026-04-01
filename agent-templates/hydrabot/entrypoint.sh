@@ -139,9 +139,16 @@ This section defines the **mandatory workflow** every time the user asks about s
 
 | Market | Primary | Fallback |
 |--------|---------|---------|
-| 台股即時價格 | Fugle MarketData API (`FUGLE_API_KEY`) | TWSE官方 `mis.twse.com.tw`（免key） |
+| 台股即時價格 | Fugle MarketData API (`FUGLE_API_KEY` + `FUGLE_REFRESH_TOKEN`) | TWSE官方 `mis.twse.com.tw`（免key） |
 | 台股歷史K線 | FinMind API (`FINMIND_TOKEN`) | TWSE OpenAPI `openapi.twse.com.tw` |
 | 美股即時+歷史 | Twelve Data API (`TWELVE_DATA_KEY`) | yfinance（備援，15分鐘延遲） |
+
+**Fugle 呼叫方式（`http_request` 工具）：**
+```
+GET https://api.fugle.tw/marketdata/v1.0/stock/intraday/quote/{symbol}
+Headers: X-API-KEY: {FUGLE_API_KEY}
+```
+FUGLE_API_KEY 和 FUGLE_REFRESH_TOKEN 均已由平台注入為環境變數，直接從 `os.environ` 取得即可。
 
 **Ticker 格式：**
 - 台灣上市：`2330`（Fugle/FinMind）或 `2330.TW`（yfinance）
