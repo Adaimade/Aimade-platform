@@ -22,6 +22,7 @@ export const agents = sqliteTable('agents', {
   llm_provider:    text('llm_provider').notNull(),
   llm_model:       text('llm_model').notNull(),
   llm_api_key_enc: text('llm_api_key_enc'),         // AES-256 encrypted
+  bot_engine:      text('bot_engine').notNull().default('standard'), // 'standard' | 'hydrabot' | 'openclaw'
   status:          text('status').notNull().default('draft'),
   created_at:      text('created_at').notNull().default(new Date().toISOString()),
 })
@@ -43,6 +44,7 @@ export const deployments = sqliteTable('deployments', {
   cloud_account_id:  text('cloud_account_id').notNull().references(() => cloudAccounts.id),
   provider:          text('provider').notNull(),
   discord_token_enc: text('discord_token_enc').notNull(),
+  extra_config_enc:  text('extra_config_enc'),               // encrypted JSON for extra params (e.g. telegram_user_ids)
   status:            text('status').notNull().default('queued'),
   external_id:       text('external_id'),
   external_url:      text('external_url'),

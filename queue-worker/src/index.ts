@@ -85,14 +85,17 @@ async function processDeployment(
   await updateStatus(db, deploymentId, 'deploying')
 
   const botEngine = (agent as any).bot_engine ?? 'standard'
-  await writeLog(db, deploymentId, 'info', `Bot engine: ${botEngine}`)
+  const botLabel = botEngine === 'hydrabot' ? 'HydraBot (Telegram)'
+                 : botEngine === 'openclaw'  ? 'OpenClaw (Discord)'
+                 : 'Standard Discord Bot'
+  await writeLog(db, deploymentId, 'info', `Bot engine: ${botLabel}`)
 
   let imageUri: string
   let envVars: Record<string, string>
 
   if (botEngine === 'hydrabot') {
     // HydraBot — Telegram bot
-    imageUri = 'ghcr.io/adaimade/hydrabot:latest'
+    imageUri = 'ghcr.io/adaimade/hydrabot:v11'
 
     // Decrypt extra config for Telegram user IDs
     let telegramUserIds = ''

@@ -50,6 +50,9 @@ export async function deploy(
   const environmentId = projectResult.createProject.environments[0]?._id
 
   // 2. Create service with Docker image
+  // Derive a friendly service name from the image (e.g. "ghcr.io/adaimade/hydrabot:v11" → "hydrabot")
+  const serviceName = imageUri.split('/').pop()?.split(':')[0] ?? 'bot'
+
   const serviceResult = await gql(creds.api_token, `
     mutation CreatePrebuiltService($projectID: ObjectID!, $schema: ServiceSpecSchemaInput!) {
       createPrebuiltService(projectID: $projectID, schema: $schema) {
@@ -60,7 +63,7 @@ export async function deploy(
   `, {
     projectID: projectId,
     schema: {
-      name: 'discord-bot',
+      name: serviceName,
       source: { image: imageUri },
     },
   })

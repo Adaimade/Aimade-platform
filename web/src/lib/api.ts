@@ -18,6 +18,8 @@ export async function apiFetch<T>(
     },
   })
 
+  if (res.status === 204) return null as T
+
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: 'Unknown error' }))
     throw new Error(err.error ?? `HTTP ${res.status}`)

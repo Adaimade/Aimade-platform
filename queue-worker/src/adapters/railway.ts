@@ -47,6 +47,9 @@ export async function deploy(
   if (!environmentId) throw new Error('No environment found in created project')
 
   // 2. Create service with Docker image
+  // Derive a friendly service name from the image (e.g. "ghcr.io/adaimade/hydrabot:v11" → "hydrabot")
+  const serviceName = imageUri.split('/').pop()?.split(':')[0] ?? 'bot'
+
   const serviceResult = await gql(creds.api_token, `
     mutation CreateService($projectId: String!, $name: String!, $image: String!) {
       serviceCreate(input: {
@@ -59,7 +62,7 @@ export async function deploy(
     }
   `, {
     projectId: project.id,
-    name: 'discord-bot',
+    name: serviceName,
     image: imageUri,
   })
 
