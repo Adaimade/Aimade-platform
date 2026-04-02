@@ -23,6 +23,7 @@ export const agents = sqliteTable('agents', {
   llm_model:       text('llm_model').notNull(),
   llm_api_key_enc: text('llm_api_key_enc'),         // AES-256 encrypted
   bot_engine:      text('bot_engine').notNull().default('standard'), // 'standard' | 'hydrabot' | 'openclaw'
+  soul_preset:     text('soul_preset').notNull().default('general'), // 'general' | 'stock_analyst' | 'code_expert' | 'daily_butler' | 'task_manager'
   status:          text('status').notNull().default('draft'),
   created_at:      text('created_at').notNull().default(new Date().toISOString()),
 })

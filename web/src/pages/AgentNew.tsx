@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useApi } from '@/lib/api'
-import type { AgentCreate, AgentSkill, LLMProvider, BotEngine } from '@/types/agent'
+import type { AgentCreate, AgentSkill, LLMProvider, BotEngine, SoulPreset } from '@/types/agent'
 import type { Agent } from '@/types/agent'
 
 const SKILLS: { id: AgentSkill; label: string; desc: string }[] = [
@@ -26,6 +26,14 @@ const BOT_ENGINES: { id: BotEngine; label: string; platform: string; desc: strin
   { id: 'openclaw',  label: 'OpenClaw',     platform: 'Discord + more',   desc: 'Multi-platform AI with 50+ integrations'   },
 ]
 
+const SOUL_PRESETS: { id: SoulPreset; emoji: string; label: string; desc: string; tag: string }[] = [
+  { id: 'general',       emoji: '🤖', label: '助理',          desc: '全能通用助手，靈活應對各種需求',           tag: 'All-round'    },
+  { id: 'stock_analyst', emoji: '📊', label: '股市分析專家',  desc: '台股、美股技術分析、持久記憶追蹤標的',     tag: 'Finance'      },
+  { id: 'code_expert',   emoji: '💻', label: '代碼專家',      desc: '代碼審查、除錯、架構建議，支援所有語言',   tag: 'Engineering'  },
+  { id: 'daily_butler',  emoji: '🗂️', label: '日常管家',      desc: '天氣、新聞、提醒、購物清單、日程安排',     tag: 'Lifestyle'    },
+  { id: 'task_manager',  emoji: '📋', label: '任務調度主管',  desc: '任務拆解、進度追蹤、多代理協作調度',       tag: 'Productivity' },
+]
+
 export default function AgentNewPage() {
   const navigate = useNavigate()
   const api = useApi()
@@ -39,6 +47,7 @@ export default function AgentNewPage() {
     llm_model: 'gpt-4o',
     llm_api_key: '',
     bot_engine: 'standard',
+    soul_preset: 'general',
   })
 
   const mutation = useMutation({
@@ -96,6 +105,30 @@ export default function AgentNewPage() {
                   <span className="text-xs px-2 py-0.5 rounded-full bg-gray-700 text-gray-300">{engine.platform}</span>
                 </div>
                 <p className="text-xs opacity-70 mt-0.5">{engine.desc}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Soul Preset — Role */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-gray-300">角色 Role</label>
+          <div className="grid grid-cols-1 gap-2">
+            {SOUL_PRESETS.map(preset => (
+              <button key={preset.id} type="button"
+                onClick={() => setForm(f => ({ ...f, soul_preset: preset.id }))}
+                className={`p-3 rounded-lg border text-left text-sm transition-colors ${
+                  form.soul_preset === preset.id
+                    ? 'border-brand-500 bg-brand-500/10 text-white'
+                    : 'border-gray-700 text-gray-400 hover:border-gray-500'
+                }`}>
+                <div className="flex items-center justify-between">
+                  <p className="font-medium">{preset.emoji} {preset.label}</p>
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-gray-700 text-gray-300 shrink-0">
+                    {preset.tag}
+                  </span>
+                </div>
+                <p className="text-xs opacity-70 mt-0.5">{preset.desc}</p>
               </button>
             ))}
           </div>

@@ -2,6 +2,7 @@ export type AgentSkill = 'chat' | 'moderation' | 'welcomer' | 'polls' | 'reminde
 export type LLMProvider = 'openai' | 'gemini' | 'anthropic'
 export type AgentStatus = 'draft' | 'deployed' | 'error' | 'stopped'
 export type BotEngine = 'standard' | 'hydrabot' | 'openclaw'
+export type SoulPreset = 'general' | 'stock_analyst' | 'code_expert' | 'daily_butler' | 'task_manager'
 
 export type Agent = {
   id: string
@@ -17,6 +18,7 @@ export type Agent = {
   llm_provider: LLMProvider
   llm_model: string
   bot_engine: BotEngine
+  soul_preset: SoulPreset
   status: AgentStatus
   created_at: string
 }

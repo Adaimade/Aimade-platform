@@ -41,7 +41,8 @@ router.post('/', async (c) => {
     llm_provider:    body.llm_provider,
     llm_model:       body.llm_model,
     llm_api_key_enc,
-    bot_engine:      body.bot_engine ?? 'standard',
+    bot_engine:      body.bot_engine  ?? 'standard',
+    soul_preset:     body.soul_preset ?? 'general',
   }).run()
 
   return c.json({ id, status: 'draft' }, 201)

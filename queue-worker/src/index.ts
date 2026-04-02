@@ -115,6 +115,7 @@ async function processDeployment(
       LLM_PROVIDER:         agent.llm_provider,
       LLM_MODEL:            agent.llm_model,
       LLM_API_KEY:          llmApiKey,
+      SOUL_PRESET:          (agent as any).soul_preset ?? 'general',
       // Stock data APIs
       FUGLE_API_KEY:        env.FUGLE_API_KEY        ?? '',
       FUGLE_REFRESH_TOKEN:  env.FUGLE_REFRESH_TOKEN  ?? '',
@@ -130,6 +131,7 @@ async function processDeployment(
       LLM_PROVIDER:      agent.llm_provider,
       LLM_MODEL:         agent.llm_model,
       LLM_API_KEY:       llmApiKey,
+      SOUL_PRESET:       (agent as any).soul_preset ?? 'general',
     }
 
   } else {
