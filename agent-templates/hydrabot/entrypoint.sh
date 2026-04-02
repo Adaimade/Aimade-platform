@@ -143,17 +143,145 @@ This section defines the **mandatory workflow** every time the user asks about s
 | 台股歷史K線 | FinMind API (`FINMIND_TOKEN`) | TWSE OpenAPI `openapi.twse.com.tw` |
 | 美股即時+歷史 | Twelve Data API (`TWELVE_DATA_KEY`) | yfinance（備援，15分鐘延遲） |
 
-**Fugle 呼叫方式（`http_request` 工具）：**
-```
-GET https://api.fugle.tw/marketdata/v1.0/stock/intraday/quote/{symbol}
-Headers: X-API-KEY: {FUGLE_API_KEY}
-```
-FUGLE_API_KEY 和 FUGLE_REFRESH_TOKEN 均已由平台注入為環境變數，直接從 `os.environ` 取得即可。
-
 **Ticker 格式：**
 - 台灣上市：`2330`（Fugle/FinMind）或 `2330.TW`（yfinance）
 - 台灣上櫃：`6770`（Fugle/FinMind）或 `6770.TWO`（yfinance）
 - 美股：`AAPL`、`NVDA`、`TSLA`（all APIs）
+
+所有 API key 均已由平台注入為環境變數，透過 `os.environ["KEY_NAME"]` 取得。
+
+---
+
+### API 呼叫範例（execute_python 中使用）
+
+**【台股即時】Fugle MarketData — 現價 + 量能**
+```python
+import os, requests
+api_key = os.environ["FUGLE_API_KEY"]
+symbol  = "2330"  # 不加 .TW
+
+# 即時報價（盤中）
+r = requests.get(
+    f"https://api.fugle.tw/marketdata/v1.0/stock/intraday/quote/{symbol}",
+    headers={"X-API-KEY": api_key}
+)
+data = r.json()
+price      = data["closePrice"] or data["openPrice"]
+change_pct = data["changePercent"]
+volume     = data["volume"]       # 張數
+
+# 歷史 K 線（最近 N 日 OHLCV）
+r2 = requests.get(
+    f"https://api.fugle.tw/marketdata/v1.0/stock/historical/candles/{symbol}",
+    headers={"X-API-KEY": api_key},
+    params={"timeframe": "D", "limit": 60}  # 60日
+)
+candles = r2.json()["data"]  # list of {date, open, high, low, close, volume}
+```
+
+**【台股備援】TWSE 官方 — 免 key，盤中即時**
+```python
+import requests, time
+symbol = "2330"
+r = requests.get(
+    "https://mis.twse.com.tw/stock/api/getStockInfo.jsp",
+    params={"ex_ch": f"tse_{symbol}.tw", "json": "1", "delay": "0", "_": int(time.time()*1000)}
+)
+info  = r.json()["msgArray"][0]
+price = info["z"]   # 現價（盤後為 "-"，取 y 前收）
+high  = info["h"]
+low   = info["l"]
+vol   = info["v"]   # 成交量（千股）
+```
+
+**【台股歷史】FinMind — 60日 OHLCV**
+```python
+import os, requests
+token  = os.environ["FINMIND_TOKEN"]
+symbol = "2330"
+
+r = requests.get(
+    "https://api.finmindtrade.com/api/v4/data",
+    params={
+        "dataset":    "TaiwanStockPrice",
+        "data_id":    symbol,
+        "start_date": "2025-02-01",  # 動態計算：今日 - 90天
+        "token":      token,
+    }
+)
+records = r.json()["data"]
+# 每筆: {date, open, max, min, close, Trading_Volume, Trading_money}
+```
+
+**【美股即時 + 歷史】Twelve Data**
+```python
+import os, requests
+api_key = os.environ["TWELVE_DATA_KEY"]
+symbol  = "AAPL"
+
+# 即時現價
+r = requests.get(
+    "https://api.twelvedata.com/price",
+    params={"symbol": symbol, "apikey": api_key}
+)
+price = float(r.json()["price"])
+
+# 即時完整報價（含漲跌幅）
+r2 = requests.get(
+    "https://api.twelvedata.com/quote",
+    params={"symbol": symbol, "apikey": api_key}
+)
+q          = r2.json()
+change_pct = float(q["percent_change"])
+volume     = int(q["volume"])
+
+# 歷史 K 線（60日）
+r3 = requests.get(
+    "https://api.twelvedata.com/time_series",
+    params={"symbol": symbol, "interval": "1day", "outputsize": 60, "apikey": api_key}
+)
+candles = r3.json()["values"]
+# 每筆: {datetime, open, high, low, close, volume}
+```
+
+**【技術指標計算】pandas + numpy（execute_python 中執行）**
+```python
+import numpy as np
+
+closes = np.array([float(c["close"]) for c in candles])
+volumes = np.array([float(c["volume"]) for c in candles])
+
+# MA
+ma5  = closes[-5:].mean()
+ma20 = closes[-20:].mean()
+ma60 = closes[-60:].mean() if len(closes) >= 60 else closes.mean()
+
+# RSI(14)
+delta = np.diff(closes[-15:])
+gain  = np.where(delta > 0, delta, 0).mean()
+loss  = np.where(delta < 0, -delta, 0).mean()
+rsi   = 100 - (100 / (1 + gain / loss)) if loss != 0 else 100
+
+# MACD(12,26,9)
+def ema(arr, n):
+    k = 2/(n+1)
+    e = arr[0]
+    for v in arr[1:]: e = v*k + e*(1-k)
+    return e
+ema12 = ema(closes[-26:], 12)
+ema26 = ema(closes[-26:], 26)
+macd  = ema12 - ema26
+
+# Bollinger Bands(20, 2σ)
+ma20_full = closes[-20:].mean()
+std20     = closes[-20:].std()
+bb_upper  = ma20_full + 2*std20
+bb_lower  = ma20_full - 2*std20
+
+# 量能比
+vol_ma20  = volumes[-20:].mean()
+vol_ratio = volumes[-1] / vol_ma20  # >1.5放量, <0.7縮量
+```
 
 ---
 
