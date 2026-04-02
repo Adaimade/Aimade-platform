@@ -74,10 +74,10 @@ export default function AgentNewPage() {
   const isStandard       = form.bot_engine === 'standard'
 
   return (
-    <div className="max-w-xl space-y-6">
+    <div className="max-w-5xl space-y-6">
       <h1 className="text-2xl font-bold">Create Agent</h1>
 
-      <form onSubmit={e => { e.preventDefault(); mutation.mutate() }} className="space-y-5">
+      <form onSubmit={e => { e.preventDefault(); mutation.mutate() }} className="space-y-6">
 
         {/* Name */}
         <div className="space-y-1">
@@ -85,52 +85,58 @@ export default function AgentNewPage() {
           <input required value={form.name}
             onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
             placeholder="My AI Assistant"
-            className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm focus:outline-none focus:border-brand-500" />
+            className="w-full max-w-sm px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm focus:outline-none focus:border-brand-500" />
         </div>
 
-        {/* Bot Engine */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-300">Bot Engine</label>
-          <div className="grid grid-cols-1 gap-2">
-            {BOT_ENGINES.map(engine => (
-              <button key={engine.id} type="button"
-                onClick={() => setForm(f => ({ ...f, bot_engine: engine.id }))}
-                className={`p-3 rounded-lg border text-left text-sm transition-colors ${
-                  form.bot_engine === engine.id
-                    ? 'border-brand-500 bg-brand-500/10 text-white'
-                    : 'border-gray-700 text-gray-400 hover:border-gray-500'
-                }`}>
-                <div className="flex items-center justify-between">
-                  <p className="font-medium">{engine.label}</p>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-gray-700 text-gray-300">{engine.platform}</span>
-                </div>
-                <p className="text-xs opacity-70 mt-0.5">{engine.desc}</p>
-              </button>
-            ))}
+        {/* Engine + Role — side by side */}
+        <div className="grid grid-cols-2 gap-6">
+
+          {/* Bot Engine */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-300">Bot Engine</label>
+            <div className="space-y-2">
+              {BOT_ENGINES.map(engine => (
+                <button key={engine.id} type="button"
+                  onClick={() => setForm(f => ({ ...f, bot_engine: engine.id }))}
+                  className={`w-full p-3 rounded-lg border text-left text-sm transition-colors ${
+                    form.bot_engine === engine.id
+                      ? 'border-brand-500 bg-brand-500/10 text-white'
+                      : 'border-gray-700 text-gray-400 hover:border-gray-500'
+                  }`}>
+                  <div className="flex items-center justify-between">
+                    <p className="font-medium">{engine.label}</p>
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-gray-700 text-gray-300 shrink-0">
+                      {engine.platform}
+                    </span>
+                  </div>
+                  <p className="text-xs opacity-60 mt-0.5">{engine.desc}</p>
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Soul Preset — Role */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-300">角色 Role</label>
-          <div className="grid grid-cols-1 gap-2">
-            {SOUL_PRESETS.map(preset => (
-              <button key={preset.id} type="button"
-                onClick={() => setForm(f => ({ ...f, soul_preset: preset.id }))}
-                className={`p-3 rounded-lg border text-left text-sm transition-colors ${
-                  form.soul_preset === preset.id
-                    ? 'border-brand-500 bg-brand-500/10 text-white'
-                    : 'border-gray-700 text-gray-400 hover:border-gray-500'
-                }`}>
-                <div className="flex items-center justify-between">
-                  <p className="font-medium">{preset.emoji} {preset.label}</p>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-gray-700 text-gray-300 shrink-0">
-                    {preset.tag}
-                  </span>
-                </div>
-                <p className="text-xs opacity-70 mt-0.5">{preset.desc}</p>
-              </button>
-            ))}
+          {/* Role */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-300">角色 Role</label>
+            <div className="space-y-2">
+              {SOUL_PRESETS.map(preset => (
+                <button key={preset.id} type="button"
+                  onClick={() => setForm(f => ({ ...f, soul_preset: preset.id }))}
+                  className={`w-full p-3 rounded-lg border text-left text-sm transition-colors ${
+                    form.soul_preset === preset.id
+                      ? 'border-brand-500 bg-brand-500/10 text-white'
+                      : 'border-gray-700 text-gray-400 hover:border-gray-500'
+                  }`}>
+                  <div className="flex items-center justify-between">
+                    <p className="font-medium">{preset.emoji} {preset.label}</p>
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-gray-700 text-gray-300 shrink-0">
+                      {preset.tag}
+                    </span>
+                  </div>
+                  <p className="text-xs opacity-60 mt-0.5">{preset.desc}</p>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -138,7 +144,7 @@ export default function AgentNewPage() {
         {isStandard && (
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-300">Skills</label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {SKILLS.map(skill => (
                 <button key={skill.id} type="button" onClick={() => toggleSkill(skill.id)}
                   className={`p-3 rounded-lg border text-left text-sm transition-colors ${
@@ -147,44 +153,43 @@ export default function AgentNewPage() {
                       : 'border-gray-700 text-gray-400 hover:border-gray-500'
                   }`}>
                   <p className="font-medium">{skill.label}</p>
-                  <p className="text-xs opacity-70">{skill.desc}</p>
+                  <p className="text-xs opacity-60">{skill.desc}</p>
                 </button>
               ))}
             </div>
           </div>
         )}
 
-        {/* AI Provider */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-300">AI Provider</label>
-            <select value={form.llm_provider}
-              onChange={e => {
-                const p = PROVIDERS.find(p => p.id === e.target.value)!
-                setForm(f => ({ ...f, llm_provider: p.id, llm_model: p.model }))
-              }}
-              className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm focus:outline-none focus:border-brand-500">
-              {PROVIDERS.map(p => <option key={p.id} value={p.id}>{p.label}</option>)}
-            </select>
+        {/* AI Provider + Model + Key */}
+        <div className="p-4 bg-gray-900 rounded-xl border border-gray-800 space-y-3">
+          <p className="text-sm font-medium text-gray-300">AI Model</p>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="space-y-1">
+              <label className="text-xs text-gray-500">Provider</label>
+              <select value={form.llm_provider}
+                onChange={e => {
+                  const p = PROVIDERS.find(p => p.id === e.target.value)!
+                  setForm(f => ({ ...f, llm_provider: p.id, llm_model: p.model }))
+                }}
+                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm focus:outline-none focus:border-brand-500">
+                {PROVIDERS.map(p => <option key={p.id} value={p.id}>{p.label}</option>)}
+              </select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs text-gray-500">Model</label>
+              <input value={form.llm_model}
+                onChange={e => setForm(f => ({ ...f, llm_model: e.target.value }))}
+                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm focus:outline-none focus:border-brand-500" />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs text-gray-500">{selectedProvider.label} API Key</label>
+              <input required type="password" value={form.llm_api_key}
+                onChange={e => setForm(f => ({ ...f, llm_api_key: e.target.value }))}
+                placeholder="sk-..."
+                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm focus:outline-none focus:border-brand-500" />
+            </div>
           </div>
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-300">Model</label>
-            <input value={form.llm_model}
-              onChange={e => setForm(f => ({ ...f, llm_model: e.target.value }))}
-              className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm focus:outline-none focus:border-brand-500" />
-          </div>
-        </div>
-
-        {/* API Key */}
-        <div className="space-y-1">
-          <label className="text-sm font-medium text-gray-300">
-            {selectedProvider.label} API Key
-          </label>
-          <input required type="password" value={form.llm_api_key}
-            onChange={e => setForm(f => ({ ...f, llm_api_key: e.target.value }))}
-            placeholder="sk-..."
-            className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm focus:outline-none focus:border-brand-500" />
-          <p className="text-xs text-gray-500">Stored encrypted. Never shared.</p>
+          <p className="text-xs text-gray-600">API key is stored encrypted and never shared.</p>
         </div>
 
         {mutation.isError && (
@@ -192,9 +197,10 @@ export default function AgentNewPage() {
         )}
 
         <button type="submit" disabled={mutation.isPending}
-          className="w-full py-3 bg-brand-500 hover:bg-brand-600 disabled:opacity-50 rounded-lg font-semibold transition-colors">
-          {mutation.isPending ? 'Creating...' : 'Create Agent'}
+          className="px-8 py-3 bg-brand-500 hover:bg-brand-600 disabled:opacity-50 rounded-lg font-semibold transition-colors">
+          {mutation.isPending ? 'Creating...' : 'Create Agent →'}
         </button>
+
       </form>
     </div>
   )
