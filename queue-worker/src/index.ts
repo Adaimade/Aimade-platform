@@ -100,7 +100,7 @@ async function processDeployment(
 
   if (botEngine === 'hydrabot') {
     // HydraBot — Telegram bot
-    imageUri = 'ghcr.io/adaimade/hydrabot:v11'
+    imageUri = 'ghcr.io/adaimade/hydrabot:v12'
 
     // Decrypt extra config for Telegram user IDs
     let telegramUserIds = ''
