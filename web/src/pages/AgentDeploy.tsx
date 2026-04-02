@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useApi } from '@/lib/api'
+import { DeploymentStatusPoller } from '@/components/DeploymentStatusPoller'
 import type { CloudAccount } from '@/types/cloud'
 import type { Agent } from '@/types/agent'
 
@@ -21,6 +22,7 @@ export default function AgentDeployPage() {
   const [cloudAccountId, setCloudAccountId] = useState('')
   const [botToken, setBotToken]     = useState('')
   const [telegramUserIds, setTelegramUserIds] = useState('')
+  const [deploymentId, setDeploymentId] = useState<string | null>(null)
 
   const { data: agent } = useQuery({
     queryKey: ['agent', agentId],
@@ -49,7 +51,7 @@ export default function AgentDeployPage() {
           : undefined,
       }),
     }),
-    onSuccess: (data) => navigate(`/dashboard?deployment=${data.deployment_id}`),
+    onSuccess: (data) => setDeploymentId(data.deployment_id),
   })
 
   const tokenLabel = isHydraBot ? 'Telegram Bot Token' : 'Discord Bot Token'
@@ -57,6 +59,22 @@ export default function AgentDeployPage() {
     ? 'From @BotFather on Telegram'
     : 'discord.com/developers/applications → Bot → Token'
   const tokenPlaceholder = isHydraBot ? 'Paste your Telegram bot token...' : 'Paste your bot token...'
+
+  // After deploy is queued, show live status tracker
+  if (deploymentId) {
+    return (
+      <div className="max-w-lg space-y-6">
+        <h1 className="text-2xl font-bold">Deploying Agent</h1>
+        {agent && (
+          <p className="text-sm text-gray-400">
+            <span className="text-white font-medium">{agent.name}</span>
+            {' · '}{botEngine} · {provider}
+          </p>
+        )}
+        <DeploymentStatusPoller deploymentId={deploymentId} />
+      </div>
+    )
+  }
 
   return (
     <div className="max-w-lg space-y-6">

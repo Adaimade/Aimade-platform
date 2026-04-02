@@ -10,6 +10,18 @@ const STATUS_STYLE: Record<string, string> = {
   stopped:  'bg-yellow-900 text-yellow-300',
 }
 
+const ENGINE_STYLE: Record<string, string> = {
+  standard: 'bg-indigo-900 text-indigo-300',
+  hydrabot: 'bg-purple-900 text-purple-300',
+  openclaw: 'bg-orange-900 text-orange-300',
+}
+
+const ENGINE_LABEL: Record<string, string> = {
+  standard: 'Discord',
+  hydrabot: 'Telegram',
+  openclaw: 'OpenClaw',
+}
+
 export default function AgentsPage() {
   const api = useApi()
   const queryClient = useQueryClient()
@@ -52,8 +64,15 @@ export default function AgentsPage() {
           <div key={agent.id}
             className="flex items-center justify-between p-4 bg-gray-900 rounded-xl border border-gray-800">
             <div>
-              <p className="font-semibold">{agent.name}</p>
-              <p className="text-sm text-gray-400">{agent.skills.join(', ')}</p>
+              <div className="flex items-center gap-2">
+                <p className="font-semibold">{agent.name}</p>
+                <span className={`text-xs px-2 py-0.5 rounded-full ${ENGINE_STYLE[agent.bot_engine ?? 'standard']}`}>
+                  {ENGINE_LABEL[agent.bot_engine ?? 'standard']}
+                </span>
+              </div>
+              {agent.skills.length > 0 && (
+                <p className="text-sm text-gray-400">{agent.skills.join(', ')}</p>
+              )}
             </div>
             <div className="flex items-center gap-3">
               <span className={`text-xs px-2 py-1 rounded-full ${STATUS_STYLE[agent.status]}`}>
