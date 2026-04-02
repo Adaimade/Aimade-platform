@@ -14,7 +14,6 @@ const PROVIDERS = [
 
 export default function AgentDeployPage() {
   const { agentId } = useParams<{ agentId: string }>()
-  const navigate = useNavigate()
   const api = useApi()
 
   const [step, setStep]             = useState<1 | 2>(1)
