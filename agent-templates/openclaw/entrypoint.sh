@@ -45,7 +45,8 @@ if [ "$PLATFORM" = "telegram" ]; then
   CHANNEL_BLOCK=$(cat <<CHAN
     "telegram": {
       "enabled": true,
-      "token": "${TELEGRAM_BOT_TOKEN}",
+      "botToken": "${TELEGRAM_BOT_TOKEN}",
+      "dmPolicy": "open",
       "allowFrom": [${ALLOW_FROM}]
     }
 CHAN
