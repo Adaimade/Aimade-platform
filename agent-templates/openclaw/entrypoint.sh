@@ -29,6 +29,9 @@ esac
 
 cat > "$OPENCLAW_CONFIG_PATH" <<EOF
 {
+  "gateway": {
+    "mode": "local"
+  },
   "channels": {
     "discord": {
       "enabled": true,
