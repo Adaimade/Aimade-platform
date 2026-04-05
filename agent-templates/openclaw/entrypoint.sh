@@ -8,22 +8,28 @@ MODEL="${LLM_MODEL:-gpt-4o}"
 API_KEY="${LLM_API_KEY:-}"
 
 # Map provider to OpenClaw provider id + baseUrl
+# For gemini: use built-in openai provider type + Google OpenAI-compat endpoint
+# Pass key via OPENAI_API_KEY env var so OpenClaw's openai provider picks it up
 case "$PROVIDER" in
   openai)
     OPENCLAW_PROVIDER="openai"
     BASE_URL="https://api.openai.com/v1"
+    export OPENAI_API_KEY="${API_KEY}"
     ;;
   anthropic)
     OPENCLAW_PROVIDER="anthropic"
     BASE_URL="https://api.anthropic.com/v1"
+    export ANTHROPIC_API_KEY="${API_KEY}"
     ;;
   gemini)
-    OPENCLAW_PROVIDER="google"
+    OPENCLAW_PROVIDER="openai"
     BASE_URL="https://generativelanguage.googleapis.com/v1beta/openai"
+    export OPENAI_API_KEY="${API_KEY}"
     ;;
   *)
     OPENCLAW_PROVIDER="openai"
     BASE_URL="https://api.openai.com/v1"
+    export OPENAI_API_KEY="${API_KEY}"
     ;;
 esac
 
