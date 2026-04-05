@@ -19,7 +19,7 @@ case "$PROVIDER" in
     ;;
   gemini)
     OPENCLAW_PROVIDER="google"
-    BASE_URL="https://generativelanguage.googleapis.com/v1beta"
+    BASE_URL="https://generativelanguage.googleapis.com/v1beta/openai"
     ;;
   *)
     OPENCLAW_PROVIDER="openai"
