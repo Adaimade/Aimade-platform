@@ -15,7 +15,7 @@ const SKILLS: { id: AgentSkill; label: string; desc: string }[] = [
 ]
 
 const PROVIDERS: { id: LLMProvider; label: string; model: string; badge?: string; badgeColor?: string }[] = [
-  { id: 'gemini',    label: 'Google Gemini', model: 'gemma-4-4b-it',       badge: 'Free',    badgeColor: 'bg-green-900 text-green-300' },
+  { id: 'gemini',    label: 'Google Gemini', model: 'gemma-3-27b-it',      badge: 'Free',    badgeColor: 'bg-green-900 text-green-300' },
   { id: 'openai',    label: 'OpenAI',        model: 'gpt-4o'                },
   { id: 'anthropic', label: 'Anthropic',     model: 'claude-sonnet-4-6'    },
 ]
@@ -44,7 +44,7 @@ export default function AgentNewPage() {
     personality: { tone: 'friendly', verbosity: 'concise', emoji: true },
     skills: ['chat'],
     llm_provider: 'gemini',
-    llm_model: 'gemma-4-4b-it',
+    llm_model: 'gemma-3-27b-it',
     llm_api_key: '',
     bot_engine: 'standard',
     soul_preset: 'general',

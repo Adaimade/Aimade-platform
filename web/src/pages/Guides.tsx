@@ -49,7 +49,7 @@ const GUIDES: Guide[] = [
       },
       {
         text: '推薦模型',
-        code: 'gemma-4-4b-it   ← 預設，免費，速度快\ngemma-4-27b-it  ← 更強，免費\ngemini-2.0-flash ← 最快，1,500 req/day 免費',
+        code: 'gemma-3-27b-it  ← 預設，免費，能力強\ngemma-3-4b-it   ← 更快，免費\ngemini-2.0-flash ← 最快，1,500 req/day 免費',
       },
     ],
   },
