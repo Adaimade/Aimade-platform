@@ -7,12 +7,24 @@ PROVIDER="${LLM_PROVIDER:-openai}"
 MODEL="${LLM_MODEL:-gpt-4o}"
 API_KEY="${LLM_API_KEY:-}"
 
-# Map provider name to OpenClaw format
+# Map provider to OpenClaw provider id + baseUrl
 case "$PROVIDER" in
-  openai)    OPENCLAW_PROVIDER="openai" ;;
-  anthropic) OPENCLAW_PROVIDER="anthropic" ;;
-  gemini)    OPENCLAW_PROVIDER="google" ;;
-  *)         OPENCLAW_PROVIDER="openai" ;;
+  openai)
+    OPENCLAW_PROVIDER="openai"
+    BASE_URL="https://api.openai.com/v1"
+    ;;
+  anthropic)
+    OPENCLAW_PROVIDER="anthropic"
+    BASE_URL="https://api.anthropic.com/v1"
+    ;;
+  gemini)
+    OPENCLAW_PROVIDER="google"
+    BASE_URL="https://generativelanguage.googleapis.com/v1beta"
+    ;;
+  *)
+    OPENCLAW_PROVIDER="openai"
+    BASE_URL="https://api.openai.com/v1"
+    ;;
 esac
 
 cat > "$OPENCLAW_CONFIG_PATH" <<EOF
@@ -28,10 +40,11 @@ cat > "$OPENCLAW_CONFIG_PATH" <<EOF
   "models": {
     "providers": {
       "${OPENCLAW_PROVIDER}": {
-        "apiKey": "${API_KEY}"
+        "apiKey": "${API_KEY}",
+        "baseUrl": "${BASE_URL}",
+        "models": ["${MODEL}"]
       }
-    },
-    "default": "${OPENCLAW_PROVIDER}/${MODEL}"
+    }
   }
 }
 EOF
