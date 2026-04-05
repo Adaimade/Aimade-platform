@@ -8,6 +8,7 @@ const links = [
   { to: '/dashboard',                label: 'Overview'       },
   { to: '/dashboard/agents',         label: 'Agents'         },
   { to: '/dashboard/cloud-accounts', label: 'Cloud Accounts' },
+  { to: '/dashboard/guides',         label: 'API Key Guides' },
 ]
 
 export default function Sidebar() {

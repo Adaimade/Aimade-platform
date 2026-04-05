@@ -14,10 +14,10 @@ const SKILLS: { id: AgentSkill; label: string; desc: string }[] = [
   { id: 'music',      label: 'Music',      desc: 'Voice channel music'       },
 ]
 
-const PROVIDERS: { id: LLMProvider; label: string; model: string }[] = [
-  { id: 'openai',    label: 'OpenAI',    model: 'gpt-4o'                     },
-  { id: 'gemini',    label: 'Gemini',    model: 'gemini-2.0-flash'           },
-  { id: 'anthropic', label: 'Anthropic', model: 'claude-sonnet-4-6'          },
+const PROVIDERS: { id: LLMProvider; label: string; model: string; badge?: string; badgeColor?: string }[] = [
+  { id: 'gemini',    label: 'Google Gemini', model: 'gemma-3-4b-it',       badge: 'Free',    badgeColor: 'bg-green-900 text-green-300' },
+  { id: 'openai',    label: 'OpenAI',        model: 'gpt-4o'                },
+  { id: 'anthropic', label: 'Anthropic',     model: 'claude-sonnet-4-6'    },
 ]
 
 const BOT_ENGINES: { id: BotEngine; label: string; platform: string; desc: string }[] = [
@@ -43,8 +43,8 @@ export default function AgentNewPage() {
     name: '',
     personality: { tone: 'friendly', verbosity: 'concise', emoji: true },
     skills: ['chat'],
-    llm_provider: 'openai',
-    llm_model: 'gpt-4o',
+    llm_provider: 'gemini',
+    llm_model: 'gemma-3-4b-it',
     llm_api_key: '',
     bot_engine: 'standard',
     soul_preset: 'general',
@@ -161,18 +161,27 @@ export default function AgentNewPage() {
         <div className="space-y-2">
           <label className="text-xs font-semibold uppercase tracking-widest text-gray-500">AI Model</label>
           <div className="p-4 bg-gray-900 rounded-xl border border-gray-800 space-y-3">
-            <div className="grid grid-cols-3 gap-3">
-              <div className="space-y-1">
-                <label className="text-xs text-gray-500">Provider</label>
-                <select value={form.llm_provider}
-                  onChange={e => {
-                    const p = PROVIDERS.find(p => p.id === e.target.value)!
-                    setForm(f => ({ ...f, llm_provider: p.id, llm_model: p.model }))
-                  }}
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm focus:outline-none focus:border-brand-500">
-                  {PROVIDERS.map(p => <option key={p.id} value={p.id}>{p.label}</option>)}
-                </select>
-              </div>
+            {/* Provider pills */}
+            <div className="flex gap-2 flex-wrap">
+              {PROVIDERS.map(p => (
+                <button key={p.id} type="button"
+                  onClick={() => setForm(f => ({ ...f, llm_provider: p.id, llm_model: p.model }))}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-sm font-medium transition-all ${
+                    form.llm_provider === p.id
+                      ? 'border-brand-500 bg-brand-500/10 text-white'
+                      : 'border-gray-700 bg-gray-800 text-gray-400 hover:border-gray-500 hover:text-gray-200'
+                  }`}>
+                  {p.label}
+                  {p.badge && (
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${p.badgeColor}`}>
+                      {p.badge}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
                 <label className="text-xs text-gray-500">Model</label>
                 <input value={form.llm_model}
@@ -183,11 +192,17 @@ export default function AgentNewPage() {
                 <label className="text-xs text-gray-500">{selectedProvider.label} API Key</label>
                 <input required type="password" value={form.llm_api_key}
                   onChange={e => setForm(f => ({ ...f, llm_api_key: e.target.value }))}
-                  placeholder="sk-..."
+                  placeholder={form.llm_provider === 'gemini' ? 'AIza...' : form.llm_provider === 'openai' ? 'sk-...' : 'sk-ant-...'}
                   className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm focus:outline-none focus:border-brand-500" />
               </div>
             </div>
-            <p className="text-xs text-gray-600">Stored encrypted · never exposed</p>
+
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-gray-600">Stored encrypted · never exposed</p>
+              <a href="/dashboard/guides" className="text-xs text-brand-400 hover:underline">
+                How to get an API key? →
+              </a>
+            </div>
           </div>
         </div>
 
