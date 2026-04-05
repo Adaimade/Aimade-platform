@@ -42,11 +42,17 @@ if [ "$PLATFORM" = "telegram" ]; then
   else
     ALLOW_FROM='"*"'
   fi
+  if [ -n "${TELEGRAM_USER_IDS:-}" ]; then
+    DM_POLICY="allowlist"
+  else
+    ALLOW_FROM='"*"'
+    DM_POLICY="open"
+  fi
   CHANNEL_BLOCK=$(cat <<CHAN
     "telegram": {
       "enabled": true,
       "botToken": "${TELEGRAM_BOT_TOKEN}",
-      "dmPolicy": "open",
+      "dmPolicy": "${DM_POLICY}",
       "allowFrom": [${ALLOW_FROM}]
     }
 CHAN
