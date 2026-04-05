@@ -27,18 +27,48 @@ case "$PROVIDER" in
     ;;
 esac
 
-cat > "$OPENCLAW_CONFIG_PATH" <<EOF
-{
-  "gateway": {
-    "mode": "local"
-  },
-  "channels": {
+# Detect platform from which token is available
+if [ -n "${TELEGRAM_BOT_TOKEN:-}" ]; then
+  PLATFORM="telegram"
+else
+  PLATFORM="discord"
+fi
+
+# Build channel config block based on platform
+if [ "$PLATFORM" = "telegram" ]; then
+  # Build allowFrom array from TELEGRAM_USER_IDS (comma-separated)
+  if [ -n "${TELEGRAM_USER_IDS:-}" ]; then
+    ALLOW_FROM=$(echo "$TELEGRAM_USER_IDS" | tr ',' '\n' | sed 's/^/"/;s/$/"/' | paste -sd ',' -)
+  else
+    ALLOW_FROM='"*"'
+  fi
+  CHANNEL_BLOCK=$(cat <<CHAN
+    "telegram": {
+      "enabled": true,
+      "token": "${TELEGRAM_BOT_TOKEN}",
+      "allowFrom": [${ALLOW_FROM}]
+    }
+CHAN
+)
+else
+  CHANNEL_BLOCK=$(cat <<CHAN
     "discord": {
       "enabled": true,
       "token": "${DISCORD_BOT_TOKEN}",
       "dmPolicy": "open",
       "allowFrom": ["*"]
     }
+CHAN
+)
+fi
+
+cat > "$OPENCLAW_CONFIG_PATH" <<EOF
+{
+  "gateway": {
+    "mode": "local"
+  },
+  "channels": {
+${CHANNEL_BLOCK}
   },
   "models": {
     "providers": {
@@ -52,5 +82,5 @@ cat > "$OPENCLAW_CONFIG_PATH" <<EOF
 }
 EOF
 
-echo "✅ OpenClaw config generated (provider: ${OPENCLAW_PROVIDER}, model: ${MODEL})"
+echo "✅ OpenClaw config generated (platform: ${PLATFORM}, provider: ${OPENCLAW_PROVIDER}, model: ${MODEL})"
 exec openclaw gateway
