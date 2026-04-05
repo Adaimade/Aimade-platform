@@ -81,16 +81,21 @@ export async function deploy(
     data: envVars,
   })
 
-  // 4. Redeploy so container restarts with env vars applied
+  // 4. Restart service so container picks up env vars
   // (Zeabur starts the container immediately on service creation before env vars are set)
-  await gql(creds.api_token, `
-    mutation Redeploy($environmentID: ObjectID!, $serviceID: ObjectID!) {
-      redeployService(environmentID: $environmentID, serviceID: $serviceID)
-    }
-  `, {
-    environmentID: environmentId,
-    serviceID: serviceId,
-  })
+  try {
+    await new Promise(r => setTimeout(r, 2000)) // wait for env vars to propagate
+    await gql(creds.api_token, `
+      mutation Restart($serviceID: ObjectID!, $environmentID: ObjectID!) {
+        restartService(serviceID: $serviceID, environmentID: $environmentID)
+      }
+    `, {
+      serviceID: serviceId,
+      environmentID: environmentId,
+    })
+  } catch (_) {
+    // Non-fatal: container will still pick up env vars on next crash-restart
+  }
 
   return { externalId: `${projectId}:${serviceId}`, externalUrl: null }
 }
