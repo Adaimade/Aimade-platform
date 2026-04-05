@@ -7,6 +7,7 @@ import AgentsPage from './pages/Agents'
 import AgentNewPage from './pages/AgentNew'
 import AgentDeployPage from './pages/AgentDeploy'
 import CloudAccountsPage from './pages/CloudAccounts'
+import AdminPage from './pages/Admin'
 import DashboardLayout from './components/layout/DashboardLayout'
 
 // Guard: redirect to sign-in if not logged in
@@ -35,6 +36,7 @@ export default function App() {
           <Route path="agents/new" element={<AgentNewPage />} />
           <Route path="agents/:agentId/deploy" element={<AgentDeployPage />} />
           <Route path="cloud-accounts" element={<CloudAccountsPage />} />
+          <Route path="admin" element={<AdminPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

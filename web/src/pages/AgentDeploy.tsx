@@ -21,6 +21,7 @@ export default function AgentDeployPage() {
   const [cloudAccountId, setCloudAccountId] = useState('')
   const [botToken, setBotToken]     = useState('')
   const [telegramUserIds, setTelegramUserIds] = useState('')
+  const [ocPlatform, setOcPlatform] = useState<'discord' | 'telegram'>('discord')
   const [deploymentId, setDeploymentId] = useState<string | null>(null)
 
   const { data: agent } = useQuery({
@@ -35,8 +36,10 @@ export default function AgentDeployPage() {
   })
 
   const filteredAccounts = accounts.filter(a => a.provider === provider)
-  const botEngine = agent?.bot_engine ?? 'standard'
-  const isHydraBot = botEngine === 'hydrabot'
+  const botEngine   = agent?.bot_engine ?? 'standard'
+  const isHydraBot  = botEngine === 'hydrabot'
+  const isOpenClaw  = botEngine === 'openclaw'
+  const useTelegram = isHydraBot || (isOpenClaw && ocPlatform === 'telegram')
 
   const deploy = useMutation({
     mutationFn: () => api<{ deployment_id: string }>('/deployments', {
@@ -45,19 +48,22 @@ export default function AgentDeployPage() {
         agent_id:         agentId,
         cloud_account_id: cloudAccountId,
         bot_token:        botToken,
-        extra_config: isHydraBot
-          ? { telegram_user_ids: telegramUserIds.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n)) }
+        extra_config: useTelegram
+          ? {
+              platform: 'telegram',
+              telegram_user_ids: telegramUserIds.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n)),
+            }
+          : isOpenClaw
+          ? { platform: 'discord' }
           : undefined,
       }),
     }),
     onSuccess: (data) => setDeploymentId(data.deployment_id),
   })
 
-  const tokenLabel = isHydraBot ? 'Telegram Bot Token' : 'Discord Bot Token'
-  const tokenHint  = isHydraBot
-    ? 'From @BotFather on Telegram'
-    : 'discord.com/developers/applications → Bot → Token'
-  const tokenPlaceholder = isHydraBot ? 'Paste your Telegram bot token...' : 'Paste your bot token...'
+  const tokenLabel       = useTelegram ? 'Telegram Bot Token' : 'Discord Bot Token'
+  const tokenHint        = useTelegram ? 'From @BotFather on Telegram' : 'discord.com/developers/applications → Bot → Token'
+  const tokenPlaceholder = useTelegram ? 'Paste your Telegram bot token...' : 'Paste your bot token...'
 
   // After deploy is queued, show live status tracker
   if (deploymentId) {
@@ -134,6 +140,23 @@ export default function AgentDeployPage() {
         <div className="space-y-4">
           <p className="text-sm text-gray-400">Step 2 of 2 — Bot Token</p>
 
+          {/* OpenClaw platform selector */}
+          {isOpenClaw && (
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-300">Platform</label>
+              <div className="grid grid-cols-2 gap-2">
+                {(['discord', 'telegram'] as const).map(p => (
+                  <button key={p} type="button" onClick={() => { setOcPlatform(p); setBotToken('') }}
+                    className={`py-2 rounded-lg border text-sm font-medium capitalize transition-colors ${
+                      ocPlatform === p ? 'border-brand-500 bg-brand-500/10 text-white' : 'border-gray-700 text-gray-400 hover:border-gray-500'
+                    }`}>
+                    {p === 'discord' ? '🎮 Discord' : '✈️ Telegram'}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="space-y-1">
             <label className="text-sm font-medium text-gray-300">{tokenLabel}</label>
             <input type="password" value={botToken}
@@ -143,7 +166,7 @@ export default function AgentDeployPage() {
             <p className="text-xs text-gray-500">{tokenHint}</p>
           </div>
 
-          {isHydraBot && (
+          {useTelegram && (
             <div className="space-y-1">
               <label className="text-sm font-medium text-gray-300">Your Telegram User ID(s)</label>
               <input type="text" value={telegramUserIds}
@@ -166,7 +189,7 @@ export default function AgentDeployPage() {
               Back
             </button>
             <button
-              disabled={!botToken || (isHydraBot && !telegramUserIds) || deploy.isPending}
+              disabled={!botToken || (useTelegram && !telegramUserIds) || deploy.isPending}
               onClick={() => deploy.mutate()}
               className="flex-1 py-3 bg-brand-500 hover:bg-brand-600 disabled:opacity-50 rounded-lg font-semibold transition-colors">
               {deploy.isPending ? 'Deploying...' : 'Deploy'}

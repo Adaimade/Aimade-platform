@@ -124,15 +124,33 @@ async function processDeployment(
     }
 
   } else if (botEngine === 'openclaw') {
-    // OpenClaw — multi-platform (Discord)
+    // OpenClaw — multi-platform (Discord or Telegram)
     imageUri = 'ghcr.io/adaimade/openclaw:latest'
-    envVars = {
-      DISCORD_BOT_TOKEN: botToken,
-      LLM_PROVIDER:      agent.llm_provider,
-      LLM_MODEL:         agent.llm_model,
-      LLM_API_KEY:       llmApiKey,
-      SOUL_PRESET:       (agent as any).soul_preset ?? 'general',
+
+    let ocPlatform = 'discord'
+    let ocTelegramUserIds = ''
+    if (deployment.extra_config_enc) {
+      const extra = JSON.parse(await decrypt(deployment.extra_config_enc, env.ENCRYPTION_KEY))
+      ocPlatform = extra.platform ?? 'discord'
+      ocTelegramUserIds = (extra.telegram_user_ids ?? []).join(',')
     }
+
+    envVars = ocPlatform === 'telegram'
+      ? {
+          TELEGRAM_BOT_TOKEN: botToken,
+          TELEGRAM_USER_IDS:  ocTelegramUserIds,
+          LLM_PROVIDER:       agent.llm_provider,
+          LLM_MODEL:          agent.llm_model,
+          LLM_API_KEY:        llmApiKey,
+          SOUL_PRESET:        (agent as any).soul_preset ?? 'general',
+        }
+      : {
+          DISCORD_BOT_TOKEN: botToken,
+          LLM_PROVIDER:      agent.llm_provider,
+          LLM_MODEL:         agent.llm_model,
+          LLM_API_KEY:       llmApiKey,
+          SOUL_PRESET:       (agent as any).soul_preset ?? 'general',
+        }
 
   } else {
     // Standard discord-engine (default)
