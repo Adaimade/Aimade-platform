@@ -21,15 +21,17 @@ cat > "$OPENCLAW_CONFIG_PATH" <<EOF
     "discord": {
       "enabled": true,
       "token": "${DISCORD_BOT_TOKEN}",
-      "dmPolicy": "open"
+      "dmPolicy": "open",
+      "allowFrom": ["*"]
     }
   },
-  "providers": {
-    "default": {
-      "type": "${OPENCLAW_PROVIDER}",
-      "apiKey": "${API_KEY}",
-      "model": "${MODEL}"
-    }
+  "models": {
+    "providers": {
+      "${OPENCLAW_PROVIDER}": {
+        "apiKey": "${API_KEY}"
+      }
+    },
+    "default": "${OPENCLAW_PROVIDER}/${MODEL}"
   }
 }
 EOF
