@@ -81,6 +81,17 @@ export async function deploy(
     data: envVars,
   })
 
+  // 4. Redeploy so container restarts with env vars applied
+  // (Zeabur starts the container immediately on service creation before env vars are set)
+  await gql(creds.api_token, `
+    mutation Redeploy($environmentID: ObjectID!, $serviceID: ObjectID!) {
+      redeployService(environmentID: $environmentID, serviceID: $serviceID)
+    }
+  `, {
+    environmentID: environmentId,
+    serviceID: serviceId,
+  })
+
   return { externalId: `${projectId}:${serviceId}`, externalUrl: null }
 }
 
