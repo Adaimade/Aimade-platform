@@ -18,7 +18,7 @@ case "$PROVIDER" in
     BASE_URL="https://api.anthropic.com/v1"
     ;;
   gemini)
-    OPENCLAW_PROVIDER="openai"
+    OPENCLAW_PROVIDER="google"
     BASE_URL="https://generativelanguage.googleapis.com/v1beta/openai"
     ;;
   *)
