@@ -42,7 +42,7 @@ cat > "$OPENCLAW_CONFIG_PATH" <<EOF
       "${OPENCLAW_PROVIDER}": {
         "apiKey": "${API_KEY}",
         "baseUrl": "${BASE_URL}",
-        "models": [{"name": "${MODEL}"}]
+        "models": [{"id": "${MODEL}", "name": "${MODEL}"}]
       }
     }
   }
